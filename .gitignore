@@ -1,0 +1,7 @@
+data/raw_html/
+__pycache__/
+*.pyc
+*.pyo
+logs/*.log
+.vscode/
+.idea/
