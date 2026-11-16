@@ -44,3 +44,33 @@ python scraper_xsmn.py --tu 2026-10-01 --den 2026-10-08
 4. **Khử trùng dữ liệu (Idempotent)**: Lọc trùng theo khoá kết hợp `(ngay, dai_ma, giai, stt)` trước khi ghi `ketqua.csv`, đảm bảo chạy nhiều lần cho kết quả nhất quán.
 5. **Cảnh báo bất thường**: `data/bat_thuong.csv` chuẩn hoá đầy đủ cột và ghi rõ `ly_do`.
 6. **User-Agent tự khai**: Định danh rõ ràng nghiên cứu, tôn trọng giới hạn tốc độ cào (≥ 2s/request).
+
+## Lịch tự động hằng ngày (Windows Task Scheduler)
+Hệ thống được thiết lập tác vụ tự động `xoso-mn-daily` chạy lúc **17:15 mỗi ngày** (sau giờ có kết quả XSMN ~16:40).
+- **Cơ chế tự bù ngày**: Đọc ngày lớn nhất hiện có trong `data/ketqua.csv` và tự động cào nối tiếp từ ngày đó đến ngày hiện tại. Nếu máy tính bị tắt 1–3 ngày, tác vụ có cờ `StartWhenAvailable` sẽ tự bù đủ dữ liệu ngay khi khởi động lại máy.
+- **Thoát an toàn**: Nếu mạng lỗi hoặc trang chưa có kết quả (trước 16:40), script ghi log và thoát êm, không ghi bản ghi rỗng/thiếu.
+- **Tự động đẩy Git**: Tự động `git add data/ logs/`, `commit` và `push` thẳng lên nhánh `main` và `local/scraper`.
+
+### Quản lý / Bật / Tắt / Gỡ lịch
+Dùng PowerShell (hoặc Command Prompt):
+- **Kiểm tra trạng thái**:
+  ```powershell
+  Get-ScheduledTask -TaskName "xoso-mn-daily"
+  ```
+- **Tạm tắt lịch**:
+  ```powershell
+  Disable-ScheduledTask -TaskName "xoso-mn-daily"
+  ```
+- **Bật lại lịch**:
+  ```powershell
+  Enable-ScheduledTask -TaskName "xoso-mn-daily"
+  ```
+- **Gỡ bỏ lịch hoàn toàn**:
+  ```powershell
+  Unregister-ScheduledTask -TaskName "xoso-mn-daily" -Confirm:$false
+  ```
+- **Chạy thử bằng tay**:
+  ```powershell
+  powershell -File "D:\GPU-work\xoso-mn\scraper\run_daily.ps1"
+  ```
+
