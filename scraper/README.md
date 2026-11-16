@@ -30,5 +30,17 @@ Mô-đun cào và chuẩn hoá dữ liệu kết quả Xổ số Kiến thiết 
 ## Cài đặt & Sử dụng
 ```bash
 pip install -r requirements.txt
+# Chạy mặc định (01-10-2026 đến 08-10-2026)
 python scraper_xsmn.py
+
+# Tuỳ chọn khoảng ngày linh hoạt
+python scraper_xsmn.py --tu 2026-10-01 --den 2026-10-08
 ```
+
+## Các điểm kỹ thuật chuẩn hoá (Cập nhật QA)
+1. **Cột `thu`**: Tự động tính toán từ trường `ngay`.
+2. **Mã đài `dai_ma`**: Sử dụng bảng mã cố định 21 đài XSMN (phân biệt rõ `BTR` - Bến Tre và `BTH` - Bình Thuận).
+3. **Đối chiếu nguồn 2**: Đọc và đối chiếu số liệu với `xosodaiphat.com`, ghi nhận sai lệch vào `data/sai_lech.csv`.
+4. **Khử trùng dữ liệu (Idempotent)**: Lọc trùng theo khoá kết hợp `(ngay, dai_ma, giai, stt)` trước khi ghi `ketqua.csv`, đảm bảo chạy nhiều lần cho kết quả nhất quán.
+5. **Cảnh báo bất thường**: `data/bat_thuong.csv` chuẩn hoá đầy đủ cột và ghi rõ `ly_do`.
+6. **User-Agent tự khai**: Định danh rõ ràng nghiên cứu, tôn trọng giới hạn tốc độ cào (≥ 2s/request).
